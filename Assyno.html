@@ -1,0 +1,57 @@
+<style type="text/css" media="screen">
+
+/* Put your CSS styling here */
+
+</style>
+
+<!-- the javascript -->
+
+<script type="text/javascript">
+    // when the whole document is loaded
+    $(document).ready(function(){
+        // when someone types in the textfield called "Search"
+        $("#search").keyup(function(){
+            // remove everything from the section called results
+            $("#results").html("");
+            // do an ajax call to the url given with the value inside the search textfield
+            $.get('../api/indicatorGroups/query/'+$(this).val()+'.json', function(json){
+                // when you get the results of the ajax call (which are in json)
+                
+                // go through the array in the json called indicatorGroups and for each value/object in the array
+                $(json.indicatorGroups).each(function(i, data){
+                    // create a link using the "href property" inside the object and the "name property" inside the object
+                    var anchor = $("<a></a>").attr("href", data.href).append(data.name);
+                    
+                    anchor.click(function(){
+                        $.get(data.json, function(a){
+                            $(a.indicators).each(function(i, det) {
+                                var url=$("<a></a>").atrr("href",det.href).attr("title".det.name).append("</br>");
+                                $('#output_div').append(url);
+                            //$('#output_div').html(a);
+                            });
+                        });
+                        return false;
+                    });
+                    
+                    // add the link to the results section
+                    $("#results").append(anchor).append("<br/>");
+                    
+                    // the above is repeated for every object in the indicatorGroups array
+                    
+                });
+            });
+            //$("#results").html($(this).val());
+        });
+    });
+</script>
+
+<div>
+    <label for="search">Search Criteria</label>
+    <input type="text" id="search" class="search" />
+    <div>
+        <div id="results" style="width:30%;display:inline-block;"></div>        
+        <div id="output_div" style="width:30%;display:inline-block;"></div>
+        <div id="output_div_2" style="width:30%;display:inline-block;"></div>
+        <!-- <iframe id="output" style="width:60%" ></iframe>-->
+    </div>
+</div>
